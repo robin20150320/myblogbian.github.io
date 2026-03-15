@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>𝓑𝓘𝓐𝓝 𝓢𝓽𝓾𝓭𝓲𝓸 · 最终版</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    /* ========== 全局重置 ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(145deg, #f7f0fc 0%, #ffeef5 40%, #ecf3fe 100%);
+      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      color: #2e3440;
+    }
+
+    /* 顶部彩虹条带 */
+    .rainbow-stripe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, 
+        #ff6b6b, #ffb347, #ffee6b, #6bff6b, #6bb5ff, #b56bff, #ff6bb5);
+      background-size: 200% 100%;
+      animation: rainbowFlow 6s linear infinite;
+      z-index: 999;
+      box-shadow: 0 0 12px rgba(255,200,200,0.6);
+      pointer-events: none;
+    }
+
+    @keyframes rainbowFlow {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+
+    /* 背景光晕 */
+    .glow-lite-1, .glow-lite-2 {
+      position: fixed;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .glow-lite-1 {
+      width: 70vmax;
+      height: 70vmax;
+      background: radial-gradient(circle at 30% 40%, #fbc4d5, #c7d9fe, transparent 70%);
+      filter: blur(110px);
+      opacity: 0.25;
+      top: -15vh;
+      left: -10vw;
+    }
+    .glow-lite-2 {
+      width: 80vmin;
+      height: 80vmin;
+      background: #fde4c2;
+      filter: blur(130px);
+      opacity: 0.2;
+      bottom: 5vh;
+      right: -5vw;
+    }
+
+    /* 主毛玻璃卡片 */
+    .glass-card {
+      position: relative;
+      z-index: 20;
+      background: rgba(255, 250, 245, 0.3);
+      backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 64px;
+      padding: 2.2rem 2.8rem 2.5rem;
+      max-width: 920px;
+      width: 100%;
+      box-shadow: 0 20px 40px -16px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+      animation: cardFloatIn 0.6s ease-out;
+    }
+    @keyframes cardFloatIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .glass-card:hover {
+      box-shadow: 0 30px 60px -20px rgba(120, 100, 150, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+      transform: scale(1.002);
+    }
+
+    /* 标题行 */
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+    h1 {
+      font-size: 3.8rem;
+      font-weight: 400;
+      color: #2e293a;
+      text-shadow: 0 2px 6px rgba(255, 255, 255, 0.7);
+      letter-spacing: 2px;
+      line-height: 1.2;
+    }
+    h1 span {
+      white-space: nowrap;
+    }
+    .title-gap {
+      display: inline-block;
+      width: 0.6rem;
+    }
+
+    /* 地球语言选择器 (独立) */
+    .lang-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .lang-btn-globe {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 60px;
+      padding: 0.5rem 1.2rem;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #3a2e45;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .lang-btn-globe i {
+      font-size: 1.4rem;
+      color: #8875a0;
+    }
+    .lang-btn-globe:hover {
+      background: rgba(255,255,255,0.9);
+      border-color: #e0c8e0;
+      transform: translateY(-2px);
+    }
+    .lang-options {
+      position: absolute;
+      top: 115%;
+      right: 0;
+      background: rgba(255, 250, 245, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 40px;
+      padding: 0.6rem 0.3rem;
+      min-width: 130px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      box-shadow: 0 16px 30px -12px rgba(90,60,80,0.3);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: 0.2s ease;
+      z-index: 100;
+    }
+    .lang-options.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .lang-option {
+      background: transparent;
+      border: none;
+      padding: 0.6rem 1.6rem;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #2e293a;
+      cursor: pointer;
+      transition: 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+    .lang-option:hover {
+      background: rgba(255, 255, 255, 0.6);
+      color: #1a1528;
+    }
+    .lang-option.active-lang {
+      background: rgba(255, 215, 235, 0.5);
+      color: #5b416b;
+      font-weight: 600;
+    }
+
+    /* 通告栏 */
+    .notice-board {
+      background: rgba(250, 240, 245, 0.45);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 235, 240, 0.8);
+      border-radius: 48px;
+      padding: 1.2rem 1.8rem;
+      margin: 1rem 0 2rem 0;
+      font-size: 1rem;
+      color: #4d4055;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      box-shadow: 0 4px 12px rgba(180,140,160,0.1);
+    }
+    .notice-board i {
+      font-size: 2rem;
+      color: #bb99aa;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .notice-text {
+      line-height: 1.6;
+      text-align: left;
+      word-break: break-word;
+    }
+    .notice-text strong {
+      color: #a35c7a;
+      font-weight: 600;
+    }
+
+    /* 副标题 */
+    .tagline {
+      font-size: 1.3rem;
+      color: #4a4455;
+      margin-bottom: 2.2rem;
+      font-weight: 350;
+      border-bottom: 1px dashed rgba(110, 100, 130, 0.25);
+      padding-bottom: 1rem;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .tagline i {
+      color: #ac92b0;
+      font-size: 1.1rem;
+    }
+    .dynamic-text {
+      transition: opacity 0.2s;
+    }
+
+    /* 双栏卡片 */
+    .sections-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      margin: 2rem 0 1.2rem;
+      justify-content: center;
+    }
+    .info-card {
+      flex: 1 1 240px;
+      background: rgba(255, 245, 250, 0.4);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 240, 245, 0.7);
+      border-radius: 48px;
+      padding: 1.6rem 1.5rem;
+      text-align: left;
+      box-shadow: 0 6px 16px rgba(150,120,140,0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: -30%;
+      width: 160%;
+      height: 160%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.5s;
+      pointer-events: none;
+    }
+    .info-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 20px 30px -12px rgba(170, 130, 160, 0.3);
+      border-color: rgba(255, 220, 235, 0.9);
+    }
+    .info-card:hover::before {
+      opacity: 0.6;
+    }
+    .info-card h3 {
+      font-size: 1.4rem;
+      font-weight: 450;
+      margin-bottom: 1.2rem;
+      color: #5d4765;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 1px dotted rgba(130,100,120,0.3);
+      padding-bottom: 0.5rem;
+    }
+    .info-card h3 i {
+      font-size: 1.4rem;
+      color: #b385a5;
+    }
+    .works-list, .contact-list {
+      list-style: none;
+    }
+    .works-list li, .contact-list li {
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      transition: transform 0.15s;
+    }
+    .works-list li:hover, .contact-list li:hover {
+      transform: translateX(5px);
+    }
+    .works-list i, .contact-list i {
+      width: 1.8rem;
+      color: #b38faa;
+      font-size: 1.2rem;
+    }
+    .works-list a, .contact-list a {
+      color: #3f354a;
+      text-decoration: none;
+      border-bottom: 1px dotted transparent;
+      transition: border 0.15s;
+    }
+    .works-list a:hover, .contact-list a:hover {
+      border-bottom: 1px dotted #a57894;
+    }
+
+    /* 脚注 */
+    .foot-lite {
+      color: rgba(70, 60, 80, 0.6);
+      font-size: 1rem;
+      margin-top: 1.8rem;
+      font-weight: 320;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+    .foot-lite i {
+      color: #bd9ebe;
+    }
+
+    /* 响应式 */
+    @media (max-width: 700px) {
+      .glass-card { padding: 2rem 1.8rem; }
+      h1 { font-size: 3rem; }
+      .title-gap { width: 0.4rem; }
+      .title-row { flex-direction: column; align-items: flex-start; }
+      .lang-dropdown { align-self: flex-end; margin-top: -0.5rem; }
+      .notice-board { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 2.6rem; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="rainbow-stripe"></div>
+  <div class="glow-lite-1"></div>
+  <div class="glow-lite-2"></div>
+
+  <main class="glass-card">
+    <!-- 标题行 + 地球语言切换 (已移除账户图标) -->
+    <div class="title-row">
+      <h1>
+        <span>𝓑𝓘𝓐𝓝</span>
+        <span class="title-gap"></span>
+        <span>𝓢𝓽𝓾𝓭𝓲𝓸</span>
+      </h1>
+
+      <div class="lang-dropdown" id="langDropdown">
+        <div class="lang-btn-globe" id="globeButton">
+          <i class="fa-solid fa-earth-asia"></i>
+          <span id="currentLangAbbr">CN</span>
+          <i class="fa-solid fa-chevron-down" style="font-size: 0.9rem; opacity: 0.7;"></i>
+        </div>
+        <div class="lang-options" id="langOptions">
+          <button class="lang-option" data-lang="en">EN</button>
+          <button class="lang-option" data-lang="ja">JP</button>
+          <button class="lang-option" data-lang="zhTW">TW</button>
+          <button class="lang-option" data-lang="zhCN">CN</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 通告栏：多语言动态内容，包含账户功能移除说明 -->
+    <div class="notice-board">
+      <i class="fa-regular fa-bell"></i>
+      <div class="notice-text" id="noticeText"></div>
+    </div>
+
+    <!-- 副标题/标语 (多语言动态) -->
+    <div class="tagline">
+      <i class="fa-regular fa-star"></i>
+      <span id="taglineText" class="dynamic-text">灵感 · 创作 · 存档</span>
+      <i class="fa-regular fa-star"></i>
+    </div>
+
+    <!-- 个人作品 + 联系方式 双栏 (标题加入多语言) -->
+    <div class="sections-row">
+      <!-- 个人作品卡片 -->
+      <div class="info-card">
+        <h3><i class="fa-regular fa-image"></i> <span id="worksTitle" class="dynamic-text">个人作品</span></h3>
+        <ul class="works-list">
+          <li><i class="fa-regular fa-folder-open"></i> <span id="worksNone" class="dynamic-text">暂无</span></li>
+        </ul>
+      </div>
+      <!-- 联系方式卡片 -->
+      <div class="info-card">
+        <h3><i class="fa-regular fa-address-card"></i> <span id="contactTitle" class="dynamic-text">联系方式</span></h3>
+        <ul class="contact-list">
+          <li><i class="fa-brands fa-bilibili"></i> <a href="https://space.bilibili.com/3494369476741704" target="_blank">哔哩哔哩个人主页</a></li>
+          <li><i class="fa-regular fa-envelope"></i> <a href="mailto:small@bian.email.cn">small@bian.email.cn</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 脚注 (多语言动态) -->
+    <div class="foot-lite">
+      <i class="fa-regular fa-heart"></i>
+      <span id="footerText" class="dynamic-text">感谢来访</span>
+      <i class="fa-regular fa-compass"></i>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      // 多语言资源 - 包含所有文本
+      const i18n = {
+        en: {
+          notice: "<strong>Attention!</strong> This website does not have any manually written code, but is the personal studio homepage generated by DeepSeek Deep Thinking R1. If there is any infringement, please contact us to delete the homepage contact information in the html file.<br><br>Note: The account feature has been removed.",
+          tagline: "Inspiration · Creation · Archive",
+          worksTitle: "Personal Works",
+          contactTitle: "Contact",
+          worksNone: "None",
+          footer: "Thanks for visiting"
+        },
+        ja: {
+          notice: "<strong>注意！</strong> このウェブサイトは手動で書かれたコードは一切なく、DeepSeek Deep Thinking R1によって生成された個人スタジオのホームページです。もし侵害があれば、HTMLファイル内の連絡先を削除するようご連絡ください。<br><br>注：アカウント機能は削除されました。",
+          tagline: "インスピレーション · 創作 · アーカイブ",
+          worksTitle: "個人作品",
+          contactTitle: "連絡先",
+          worksNone: "なし",
+          footer: "ご訪問ありがとうございます"
+        },
+        zhTW: {
+          notice: "<strong>注意！</strong> 本網站沒有任何手動編寫的程式碼，而是由DeepSeek Deep Thinking R1生成的個人工作室首頁，如有侵權行為，請聯絡我們刪除首頁HTML檔案中的聯絡方式。<br><br>附註：帳戶功能已移除。",
+          tagline: "靈感 · 創作 · 存檔",
+          worksTitle: "個人作品",
+          contactTitle: "聯繫方式",
+          worksNone: "暫無",
+          footer: "感謝來訪"
+        },
+        zhCN: {
+          notice: "<strong>注意！</strong> 本网站没有任何手动编写的代码，而是由DeepSeek Deep Thinking R1生成的个人工作室主页，如有侵权行为，请联系我们删除主页HTML文件中的联系方式。<br><br>附注：账户功能已移除。",
+          tagline: "灵感 · 创作 · 存档",
+          worksTitle: "个人作品",
+          contactTitle: "联系方式",
+          worksNone: "暂无",
+          footer: "感谢来访"
+        }
+      };
+
+      const abbrMap = { en: 'EN', ja: 'JP', zhTW: 'TW', zhCN: 'CN' };
+
+      // DOM 元素
+      const noticeDiv = document.getElementById('noticeText');
+      const taglineSpan = document.getElementById('taglineText');
+      const worksTitleSpan = document.getElementById('worksTitle');
+      const contactTitleSpan = document.getElementById('contactTitle');
+      const worksNoneSpan = document.getElementById('worksNone');
+      const footerSpan = document.getElementById('footerText');
+      const currentLangAbbr = document.getElementById('currentLangAbbr');
+      const globeButton = document.getElementById('globeButton');
+      const langOptions = document.getElementById('langOptions');
+      const optionButtons = document.querySelectorAll('.lang-option');
+
+      let currentLang = 'zhCN';
+      let menuOpen = false;
+
+      function toggleMenu(show) {
+        if (show) {
+          langOptions.classList.add('show');
+          menuOpen = true;
+        } else {
+          langOptions.classList.remove('show');
+          menuOpen = false;
+        }
+      }
+
+      globeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu(!menuOpen);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!globeButton.contains(e.target) && !langOptions.contains(e.target)) {
+          toggleMenu(false);
+        }
+      });
+
+      function setLanguage(lang) {
+        if (!i18n[lang]) return;
+        const texts = i18n[lang];
+
+        // 淡出效果
+        const elements = [noticeDiv, taglineSpan, worksTitleSpan, contactTitleSpan, worksNoneSpan, footerSpan];
+        elements.forEach(el => el.style.opacity = '0');
+
+        setTimeout(() => {
+          noticeDiv.innerHTML = texts.notice;
+          taglineSpan.textContent = texts.tagline;
+          worksTitleSpan.textContent = texts.worksTitle;
+          contactTitleSpan.textContent = texts.contactTitle;
+          worksNoneSpan.textContent = texts.worksNone;
+          footerSpan.textContent = texts.footer;
+
+          currentLangAbbr.textContent = abbrMap[lang] || 'CN';
+
+          // 更新语言选项激活状态
+          optionButtons.forEach(btn => {
+            const btnLang = btn.getAttribute('data-lang');
+            btn.classList.toggle('active-lang', btnLang === lang);
+          });
+
+          elements.forEach(el => el.style.opacity = '1');
+          currentLang = lang;
+        }, 150);
+
+        toggleMenu(false);
+      }
+
+      // 绑定语言选项点击
+      optionButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const lang = e.target.getAttribute('data-lang');
+          setLanguage(lang);
+        });
+      });
+
+      // 初始化显示简体中文
+      setLanguage('zhCN');
+    })();
+  </script>
+</body>
+</html>
